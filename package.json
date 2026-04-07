@@ -1,0 +1,12 @@
+{
+  "name": "dr-lurdes-ernesto",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Area de membros com chat suportado por backend Node.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}

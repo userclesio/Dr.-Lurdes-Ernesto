@@ -2,9 +2,10 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const HOST = '127.0.0.1';
+const HOST = process.env.HOST || '0.0.0.0';
 const DEFAULT_PORT = Number(process.env.PORT || 3000);
 const MAX_PORT_TRIES = 20;
+const SHOULD_RETRY_PORTS = !process.env.PORT;
 const ROOT = __dirname;
 const ENV_FILE = path.join(ROOT, '.env.local');
 
@@ -198,7 +199,7 @@ function startServer(port, attemptsLeft) {
   const server = createServer();
 
   server.on('error', (error) => {
-    if (error.code === 'EADDRINUSE' && attemptsLeft > 0) {
+    if (SHOULD_RETRY_PORTS && error.code === 'EADDRINUSE' && attemptsLeft > 0) {
       const nextPort = port + 1;
       console.log(`Porta ${port} ocupada. A tentar ${nextPort}...`);
       startServer(nextPort, attemptsLeft - 1);
@@ -209,7 +210,12 @@ function startServer(port, attemptsLeft) {
   });
 
   server.listen(port, HOST, () => {
-    console.log(`Servidor activo em http://${HOST}:${port}/area_membros.html`);
+    const localUrl = `http://127.0.0.1:${port}/area_membros.html`;
+    const publicUrl = process.env.RENDER_EXTERNAL_URL
+      ? `${process.env.RENDER_EXTERNAL_URL.replace(/\/$/, '')}/area_membros.html`
+      : null;
+
+    console.log(`Servidor activo em ${publicUrl || localUrl}`);
   });
 }
 

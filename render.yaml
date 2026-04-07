@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: dr-lurdes-ernesto
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
