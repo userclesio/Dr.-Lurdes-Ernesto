@@ -417,6 +417,43 @@
 
 <script>
 // ── LOGIN — qualquer nome e senha funcionam ──
+const REMEMBER_LOGIN_KEY = 'protocolo_member_session';
+
+function formatMemberName(name) {
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+function openMemberArea(name) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('welcome-name').textContent = name;
+  document.getElementById('user-name-display').textContent = name;
+  document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
+}
+
+function saveRememberedLogin(name) {
+  localStorage.setItem(REMEMBER_LOGIN_KEY, JSON.stringify({ name }));
+}
+
+function clearRememberedLogin() {
+  localStorage.removeItem(REMEMBER_LOGIN_KEY);
+}
+
+function restoreRememberedLogin() {
+  const saved = localStorage.getItem(REMEMBER_LOGIN_KEY);
+  if (!saved) return;
+
+  try {
+    const session = JSON.parse(saved);
+    if (!session || !session.name) return;
+
+    document.getElementById('login-user').value = session.name;
+    openMemberArea(formatMemberName(session.name));
+  } catch {
+    clearRememberedLogin();
+  }
+}
+
 function doLogin() {
   const user = document.getElementById('login-user').value.trim();
   const pass = document.getElementById('login-pass').value.trim();
@@ -428,24 +465,24 @@ function doLogin() {
   }
 
   err.style.display = 'none';
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-
-  const name = user.charAt(0).toUpperCase() + user.slice(1);
-  document.getElementById('welcome-name').textContent = name;
-  document.getElementById('user-name-display').textContent = name;
-  document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
+  saveRememberedLogin(user);
+  openMemberArea(formatMemberName(user));
 }
 
 document.getElementById('login-user').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('login-pass').focus(); });
 document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 
 function doLogout() {
+  clearRememberedLogin();
   document.getElementById('app').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('login-user').value = '';
   document.getElementById('login-pass').value = '';
+  document.getElementById('login-error').style.display = 'none';
+  showSection('dashboard', document.querySelector('.nav-item'));
 }
+
+restoreRememberedLogin();
 
 // ── NAVEGAÇÃO ──
 function showSection(id, btn) {
