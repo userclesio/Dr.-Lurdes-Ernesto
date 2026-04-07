@@ -122,6 +122,7 @@ async function handleChat(req, res) {
     const data = await upstream.json().catch(() => ({}));
 
     if (!upstream.ok) {
+      console.error('OpenAI API error:', upstream.status, data);
       sendJson(res, upstream.status, {
         error: {
           message: data.error?.message || 'Falha ao comunicar com a OpenAI.',
@@ -142,6 +143,7 @@ async function handleChat(req, res) {
       ? 'O pedido recebido pelo servidor não estava em JSON válido.'
       : error.message || 'Erro inesperado no servidor local.';
 
+    console.error('Local server error:', error);
     sendJson(res, 500, { error: { message } });
   }
 }
@@ -174,7 +176,7 @@ function handleStatic(req, res) {
 function createServer() {
   return http.createServer((req, res) => {
     if (req.method === 'GET' && req.url === '/api/health') {
-      sendJson(res, 200, { ok: true });
+      sendJson(res, 200, { ok: true, hasApiKey: Boolean(getOpenAiApiKey()) });
       return;
     }
 

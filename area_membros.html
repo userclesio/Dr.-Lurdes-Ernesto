@@ -539,8 +539,18 @@ async function sendMessage() {
       })
     });
     if (!res.ok) {
-      const e = await res.json().catch(() => ({}));
-      throw new Error(e.error?.message || e.message || 'Erro na API');
+      const contentType = res.headers.get('content-type') || '';
+
+      if (contentType.includes('application/json')) {
+        const e = await res.json().catch(() => ({}));
+        throw new Error(e.error?.message || e.message || `Erro na API (${res.status})`);
+      }
+
+      if (res.status === 404 || res.status === 405) {
+        throw new Error('O endpoint /api/chat não está disponível nesta hospedagem. Esta página precisa de backend activo.');
+      }
+
+      throw new Error(`O servidor devolveu um erro inesperado (${res.status}).`);
     }
     const data = await res.json();
     const reply = data.reply;
@@ -554,6 +564,8 @@ async function sendMessage() {
       ? 'Abre esta página através do servidor local. Executa "node server.js" nesta pasta e depois entra em http://localhost:3000/area_membros.html'
       : msg === 'Failed to fetch'
         ? 'Não consegui ligar ao servidor local do chat. Confirma se o servidor está activo com "node server.js".'
+        : msg === 'O endpoint /api/chat não está disponível nesta hospedagem. Esta página precisa de backend activo.'
+          ? 'Estás a abrir uma versão estática da página. Para o chat funcionar, usa o servidor Node local ou publica também o backend.'
         : msg === 'A API key da OpenAI não foi encontrada no servidor.'
           ? 'Cria o ficheiro .env.local nesta pasta com a linha OPENAI_API_KEY=... e volta a iniciar o servidor.'
         : msg;
