@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Área de Membros — Protocolo Cetogênica Orgânico</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark: #1B4332;
+    --green-mid: #2D6A4F;
+    --green-light: #40916C;
+    --green-pale: #D8F3DC;
+    --gold: #D4A017;
+    --gold-light: #F5D78E;
+    --dark: #0F1C14;
+    --darker: #080F0A;
+    --white: #FFFFFF;
+    --red: #C0392B;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Jost',sans-serif; background:var(--darker); color:var(--white); min-height:100vh; overflow-x:hidden; }
+
+  /* LOGIN */
+  #login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+  .bg-circle { position:absolute; border-radius:50%; background:var(--green-mid); opacity:0.08; pointer-events:none; }
+  .bg-circle.c1 { width:600px; height:600px; top:-200px; right:-150px; }
+  .bg-circle.c2 { width:400px; height:400px; bottom:-100px; left:-100px; }
+  .bg-circle.c3 { width:200px; height:200px; top:40%; left:20%; opacity:0.05; }
+
+  .login-card {
+    background:rgba(15,28,20,0.95);
+    border:1px solid rgba(212,160,23,0.3);
+    padding:52px 44px 44px;
+    width:420px; max-width:95vw;
+    position:relative;
+    animation:fadeUp 0.6s ease;
+  }
+  .login-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+  .login-logo { text-align:center; margin-bottom:32px; }
+  .login-logo .badge {
+    display:inline-block; background:var(--green-dark);
+    border:1px solid rgba(212,160,23,0.4); color:var(--gold);
+    font-size:9px; letter-spacing:4px; text-transform:uppercase;
+    padding:5px 16px; margin-bottom:14px;
+  }
+  .login-logo h1 { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; line-height:1.2; }
+  .login-logo h1 span { color:var(--gold); }
+  .login-logo p { color:rgba(255,255,255,0.4); font-size:11px; letter-spacing:2px; text-transform:uppercase; margin-top:6px; }
+
+  .login-divider { display:flex; align-items:center; gap:12px; margin-bottom:28px; }
+  .login-divider .line { flex:1; height:0.5px; background:rgba(212,160,23,0.2); }
+  .login-divider .diamond { width:6px; height:6px; background:var(--gold); transform:rotate(45deg); }
+
+  .login-field { margin-bottom:16px; }
+  .login-field label { display:block; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:8px; }
+  .login-field input {
+    width:100%; background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.1); color:var(--white);
+    padding:13px 16px; font-family:'Jost',sans-serif; font-size:14px;
+    outline:none; transition:border-color 0.2s;
+  }
+  .login-field input:focus { border-color:var(--gold); }
+  .login-field input::placeholder { color:rgba(255,255,255,0.2); }
+
+  .login-error { color:#FF6B6B; font-size:12px; margin-bottom:12px; display:none; text-align:center; }
+
+  .login-btn {
+    width:100%; background:var(--gold); color:var(--dark);
+    border:none; padding:15px; font-family:'Jost',sans-serif;
+    font-size:13px; font-weight:600; letter-spacing:2px;
+    text-transform:uppercase; cursor:pointer; transition:background 0.2s,transform 0.1s; margin-top:8px;
+  }
+  .login-btn:hover { background:var(--gold-light); }
+  .login-btn:active { transform:scale(0.99); }
+  .login-hint { text-align:center; margin-top:20px; color:rgba(255,255,255,0.2); font-size:11px; }
+
+  /* APP */
+  #app { display:none; min-height:100vh; }
+  .layout { display:flex; min-height:100vh; }
+
+  .sidebar {
+    width:260px; background:var(--dark);
+    border-right:1px solid rgba(212,160,23,0.15);
+    display:flex; flex-direction:column;
+    position:fixed; top:0; left:0; bottom:0; z-index:100;
+    transition:transform 0.3s;
+  }
+  .sidebar-logo { padding:28px 24px 20px; border-bottom:1px solid rgba(212,160,23,0.1); }
+  .sidebar-logo .s-badge { font-size:8px; letter-spacing:3px; color:var(--gold); text-transform:uppercase; margin-bottom:6px; display:block; }
+  .sidebar-logo h2 { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:600; line-height:1.3; }
+  .sidebar-logo h2 span { color:var(--gold); }
+
+  .sidebar-nav { flex:1; padding:16px 12px; }
+  .nav-label { font-size:9px; letter-spacing:3px; color:rgba(255,255,255,0.25); text-transform:uppercase; padding:0 12px; margin-bottom:8px; margin-top:16px; display:block; }
+  .nav-item {
+    display:flex; align-items:center; gap:12px; padding:11px 14px;
+    cursor:pointer; border-radius:4px; transition:background 0.15s;
+    color:rgba(255,255,255,0.55); font-size:13px;
+    border:none; background:none; width:100%; text-align:left;
+  }
+  .nav-item:hover { background:rgba(255,255,255,0.05); color:var(--white); }
+  .nav-item.active { background:rgba(212,160,23,0.12); color:var(--gold); border-left:2px solid var(--gold); }
+  .nav-item .icon { width:18px; height:18px; display:flex; align-items:center; justify-content:center; font-size:15px; }
+
+  .sidebar-user { padding:16px 20px; border-top:1px solid rgba(212,160,23,0.1); display:flex; align-items:center; gap:12px; }
+  .user-avatar { width:34px; height:34px; background:var(--green-dark); border:1px solid var(--gold); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; color:var(--gold); flex-shrink:0; }
+  .user-info { flex:1; min-width:0; }
+  .user-info .uname { font-size:12px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .user-info .urole { font-size:10px; color:var(--gold); letter-spacing:1px; }
+  .logout-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.3); font-size:16px; padding:4px; transition:color 0.2s; }
+  .logout-btn:hover { color:var(--red); }
+
+  .main { margin-left:260px; flex:1; background:#111a14; min-height:100vh; }
+  .topbar { background:var(--dark); border-bottom:1px solid rgba(212,160,23,0.1); padding:16px 32px; display:flex; align-items:center; justify-content:space-between; }
+  .topbar h3 { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600; }
+  .status { display:flex; align-items:center; gap:8px; font-size:11px; color:var(--green-light); }
+  .status-dot { width:7px; height:7px; background:var(--green-light); border-radius:50%; animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .content { padding:32px; }
+  .section { display:none; }
+  .section.active { display:block; animation:fadeIn 0.3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  /* Dashboard */
+  .welcome-banner { background:var(--dark); border:1px solid rgba(212,160,23,0.2); padding:28px 32px; margin-bottom:28px; position:relative; overflow:hidden; }
+  .welcome-banner::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+  .welcome-banner h2 { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600; margin-bottom:8px; }
+  .welcome-banner h2 span { color:var(--gold); }
+  .welcome-banner p { color:rgba(255,255,255,0.55); font-size:13px; line-height:1.6; max-width:540px; }
+
+  .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:28px; }
+  .stat-card { background:var(--dark); border:1px solid rgba(255,255,255,0.06); padding:20px 22px; }
+  .stat-card .s-label { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.35); margin-bottom:10px; }
+  .stat-card .s-val { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:700; color:var(--gold); line-height:1; margin-bottom:4px; }
+  .stat-card .s-sub { font-size:11px; color:var(--green-light); }
+
+  .quick-access { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .qa-card { background:var(--dark); border:1px solid rgba(255,255,255,0.06); padding:22px; cursor:pointer; transition:border-color 0.2s,transform 0.15s; display:flex; align-items:center; gap:18px; }
+  .qa-card:hover { border-color:rgba(212,160,23,0.4); transform:translateY(-2px); }
+  .qa-icon { width:46px; height:46px; background:rgba(212,160,23,0.1); border:1px solid rgba(212,160,23,0.3); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+  .qa-text h4 { font-size:13px; font-weight:600; margin-bottom:4px; }
+  .qa-text p { font-size:11px; color:rgba(255,255,255,0.4); }
+
+  /* Materiais */
+  .materials-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .pdf-card { background:var(--dark); border:1px solid rgba(212,160,23,0.2); overflow:hidden; transition:border-color 0.2s,transform 0.15s; }
+  .pdf-card:hover { border-color:var(--gold); transform:translateY(-2px); }
+  .pdf-header { background:var(--green-dark); padding:22px 22px 18px; position:relative; }
+  .pdf-header::after { content:''; position:absolute; bottom:0;left:0;right:0; height:1px; background:rgba(212,160,23,0.3); }
+  .pdf-badge { font-size:8px; letter-spacing:3px; color:var(--gold); text-transform:uppercase; margin-bottom:8px; display:block; }
+  .pdf-title { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:700; line-height:1.3; }
+  .pdf-body { padding:20px 22px; }
+  .pdf-desc { font-size:12px; color:rgba(255,255,255,0.5); line-height:1.6; margin-bottom:16px; }
+  .pdf-meta { display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
+  .meta-tag { background:rgba(212,160,23,0.1); border:1px solid rgba(212,160,23,0.2); color:var(--gold); font-size:9px; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; }
+  .pdf-includes { margin-bottom:20px; }
+  .pdf-includes p { font-size:10px; color:rgba(255,255,255,0.35); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
+  .include-item { display:flex; align-items:center; gap:8px; font-size:12px; color:rgba(255,255,255,0.6); margin-bottom:5px; }
+  .include-item::before { content:'✓'; color:var(--gold); font-size:11px; flex-shrink:0; }
+  .download-btn { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; background:var(--gold); color:var(--dark); border:none; padding:13px; font-family:'Jost',sans-serif; font-size:11px; font-weight:600; letter-spacing:2px; text-transform:uppercase; cursor:pointer; transition:background 0.2s; text-decoration:none; }
+  .download-btn:hover { background:var(--gold-light); }
+
+  /* Chat */
+  .chat-layout { display:flex; flex-direction:column; height:calc(100vh - 130px); background:var(--dark); border:1px solid rgba(212,160,23,0.15); overflow:hidden; }
+  .chat-header { background:var(--green-dark); padding:16px 24px; display:flex; align-items:center; gap:14px; border-bottom:1px solid rgba(212,160,23,0.2); flex-shrink:0; }
+  .dr-avatar { width:42px; height:42px; background:var(--gold); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:700; color:var(--dark); flex-shrink:0; }
+  .dr-info h4 { font-size:14px; font-weight:600; margin-bottom:2px; }
+  .dr-info span { font-size:10px; color:var(--green-light); display:flex; align-items:center; gap:5px; }
+
+  .chat-api-bar { background:rgba(212,160,23,0.06); border-bottom:1px solid rgba(212,160,23,0.1); padding:10px 24px; display:flex; align-items:center; gap:12px; flex-shrink:0; }
+  .api-label { font-size:9px; letter-spacing:2px; color:rgba(255,255,255,0.3); text-transform:uppercase; white-space:nowrap; }
+  .api-status { font-size:11px; color:rgba(255,255,255,0.65); }
+
+  .chat-messages { flex:1; overflow-y:auto; padding:24px; display:flex; flex-direction:column; gap:18px; scroll-behavior:smooth; }
+  .chat-messages::-webkit-scrollbar { width:4px; }
+  .chat-messages::-webkit-scrollbar-thumb { background:rgba(212,160,23,0.2); border-radius:2px; }
+
+  .msg { display:flex; gap:12px; max-width:80%; animation:msgIn 0.25s ease; }
+  @keyframes msgIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+  .msg.user { flex-direction:row-reverse; align-self:flex-end; }
+  .msg.assistant { align-self:flex-start; }
+  .msg-avatar { width:32px; height:32px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; }
+  .msg.user .msg-avatar { background:var(--green-dark); color:var(--gold); }
+  .msg.assistant .msg-avatar { background:var(--gold); color:var(--dark); font-family:'Cormorant Garamond',serif; font-size:14px; }
+  .msg-bubble { padding:12px 16px; font-size:13px; line-height:1.6; }
+  .msg.user .msg-bubble { background:var(--green-dark); border:1px solid rgba(212,160,23,0.15); color:rgba(255,255,255,0.88); border-radius:12px 2px 12px 12px; }
+  .msg.assistant .msg-bubble { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); color:rgba(255,255,255,0.85); border-radius:2px 12px 12px 12px; }
+  .msg-time { font-size:9px; color:rgba(255,255,255,0.2); margin-top:4px; }
+  .msg.user .msg-time { text-align:right; }
+
+  .typing-indicator { display:none; align-self:flex-start; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:12px 18px; border-radius:2px 12px 12px 12px; }
+  .typing-indicator.visible { display:flex; gap:5px; align-items:center; }
+  .dot { width:6px; height:6px; background:var(--gold); border-radius:50%; animation:bounce 1.2s infinite; }
+  .dot:nth-child(2) { animation-delay:0.2s; }
+  .dot:nth-child(3) { animation-delay:0.4s; }
+  @keyframes bounce { 0%,80%,100%{transform:translateY(0);opacity:0.4} 40%{transform:translateY(-5px);opacity:1} }
+
+  .quick-questions { padding:12px 24px; border-top:1px solid rgba(255,255,255,0.05); display:flex; gap:8px; flex-wrap:wrap; flex-shrink:0; background:rgba(0,0,0,0.15); }
+  .quick-q { background:rgba(212,160,23,0.08); border:1px solid rgba(212,160,23,0.2); color:rgba(212,160,23,0.8); font-size:10px; padding:5px 12px; cursor:pointer; transition:background 0.15s; font-family:'Jost',sans-serif; border-radius:2px; }
+  .quick-q:hover { background:rgba(212,160,23,0.15); color:var(--gold); }
+
+  .chat-input-area { padding:16px 24px; border-top:1px solid rgba(212,160,23,0.1); display:flex; gap:12px; align-items:flex-end; flex-shrink:0; }
+  .chat-input { flex:1; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--white); padding:12px 16px; font-family:'Jost',sans-serif; font-size:13px; outline:none; resize:none; min-height:44px; max-height:120px; transition:border-color 0.2s; border-radius:2px; }
+  .chat-input:focus { border-color:rgba(212,160,23,0.4); }
+  .chat-input::placeholder { color:rgba(255,255,255,0.2); }
+  .send-btn { background:var(--gold); border:none; width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background 0.2s,transform 0.1s; flex-shrink:0; border-radius:2px; }
+  .send-btn:hover { background:var(--gold-light); }
+  .send-btn:active { transform:scale(0.95); }
+  .send-btn svg { width:18px; height:18px; fill:var(--dark); }
+
+  .hamburger { display:none; background:none; border:none; color:var(--white); font-size:22px; cursor:pointer; padding:4px; }
+  .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:99; }
+
+  @media (max-width:768px) {
+    .sidebar { transform:translateX(-100%); }
+    .sidebar.open { transform:translateX(0); }
+    .sidebar-overlay.open { display:block; }
+    .main { margin-left:0; }
+    .hamburger { display:block; }
+    .stats-grid { grid-template-columns:1fr 1fr; }
+    .quick-access,.materials-grid { grid-template-columns:1fr; }
+    .content { padding:20px 16px; }
+    .msg { max-width:92%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="bg-circle c1"></div>
+  <div class="bg-circle c2"></div>
+  <div class="bg-circle c3"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <span class="badge">Área Exclusiva de Membros</span>
+      <h1>Protocolo <span>Cetogênica</span><br>Orgânico</h1>
+      <p>Dra. Lurdes Ernesto · Acesso Privado</p>
+    </div>
+    <div class="login-divider">
+      <div class="line"></div><div class="diamond"></div><div class="line"></div>
+    </div>
+    <div class="login-field">
+      <label>O teu nome</label>
+      <input type="text" id="login-user" placeholder="Escreve o teu nome" autocomplete="off">
+    </div>
+    <div class="login-field">
+      <label>Senha de acesso</label>
+      <input type="password" id="login-pass" placeholder="A tua senha">
+    </div>
+    <div class="login-error" id="login-error">Por favor preenche o nome e a senha para entrar.</div>
+    <button class="login-btn" onclick="doLogin()">Entrar na Área de Membros</button>
+    <p class="login-hint">Acesso disponível após a compra do protocolo</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="layout">
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <span class="s-badge">Área de Membros</span>
+        <h2>Protocolo<br><span>Cetogênica</span> Orgânico</h2>
+      </div>
+      <nav class="sidebar-nav">
+        <span class="nav-label">Menu Principal</span>
+        <button class="nav-item active" onclick="showSection('dashboard',this)"><span class="icon">🏠</span> Início</button>
+        <button class="nav-item" onclick="showSection('materiais',this)"><span class="icon">📄</span> Materiais</button>
+        <button class="nav-item" onclick="showSection('chat',this)"><span class="icon">💬</span> Chat com a Doutora</button>
+      </nav>
+      <div class="sidebar-user">
+        <div class="user-avatar" id="user-avatar">M</div>
+        <div class="user-info">
+          <div class="uname" id="user-name-display">Membro</div>
+          <div class="urole">Acesso Completo</div>
+        </div>
+        <button class="logout-btn" onclick="doLogout()" title="Sair">✕</button>
+      </div>
+    </div>
+
+    <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <main class="main">
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <button class="hamburger" onclick="toggleSidebar()">☰</button>
+          <h3 id="page-title">Início</h3>
+        </div>
+        <div class="status"><div class="status-dot"></div>Protocolo Activo</div>
+      </div>
+
+      <div class="content">
+
+        <!-- DASHBOARD -->
+        <div class="section active" id="sec-dashboard">
+          <div class="welcome-banner">
+            <h2>Bem-vindo, <span id="welcome-name">Membro</span> 👋</h2>
+            <p>Tens acesso completo ao teu protocolo. Segue os materiais, consulta a Doutora sempre que precisares e lembra-te: os resultados aparecem a partir do 3.º dia quando o método é seguido correctamente.</p>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card"><div class="s-label">Protocolo</div><div class="s-val">21</div><div class="s-sub">dias de programa</div></div>
+            <div class="stat-card"><div class="s-label">Primeiro resultado</div><div class="s-val">3°</div><div class="s-sub">dia esperado</div></div>
+            <div class="stat-card"><div class="s-label">Materiais</div><div class="s-val">2</div><div class="s-sub">guias disponíveis</div></div>
+          </div>
+          <div class="quick-access">
+            <div class="qa-card" onclick="showSection('materiais',document.querySelector('[onclick*=materiais]'))">
+              <div class="qa-icon">📗</div>
+              <div class="qa-text"><h4>Protocolo Completo</h4><p>Receitas, calendário 21 dias e FAQ</p></div>
+            </div>
+            <div class="qa-card" onclick="showSection('materiais',document.querySelector('[onclick*=materiais]'))">
+              <div class="qa-icon">⚡</div>
+              <div class="qa-text"><h4>Acelerador de Resultados</h4><p>Os 7 primeiros dias ao máximo</p></div>
+            </div>
+            <div class="qa-card" onclick="showSection('chat',document.querySelector('[onclick*=chat]'))">
+              <div class="qa-icon">💬</div>
+              <div class="qa-text"><h4>Falar com a Doutora</h4><p>Dúvidas sobre o protocolo em tempo real</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MATERIAIS -->
+        <div class="section" id="sec-materiais">
+          <div class="materials-grid">
+            <div class="pdf-card">
+              <div class="pdf-header">
+                <span class="pdf-badge">Material Principal</span>
+                <div class="pdf-title">Protocolo Cetogênica Orgânico</div>
+              </div>
+              <div class="pdf-body">
+                <p class="pdf-desc">O guia completo com as duas receitas, o calendário de 21 dias, depoimentos reais e perguntas frequentes respondidas pela Dra. Lurdes.</p>
+                <div class="pdf-meta"><span class="meta-tag">10 páginas</span><span class="meta-tag">2 Receitas</span><span class="meta-tag">21 dias</span></div>
+                <div class="pdf-includes">
+                  <p>O que inclui</p>
+                  <div class="include-item">Receita 1 — Desinchar sem emagrecer</div>
+                  <div class="include-item">Receita 2 — Desinchar + queima de gordura</div>
+                  <div class="include-item">Plano completo semana a semana</div>
+                  <div class="include-item">Dicas de potenciação e FAQ</div>
+                </div>
+                <a href="Protocolo_Cetogenica_Organico.pdf" download class="download-btn">⬇ Descarregar Protocolo</a>
+              </div>
+            </div>
+            <div class="pdf-card">
+              <div class="pdf-header" style="background:#0F2418;">
+                <span class="pdf-badge">Bónus Exclusivo</span>
+                <div class="pdf-title">Acelerador de Resultados</div>
+              </div>
+              <div class="pdf-body">
+                <p class="pdf-desc">O guia que garante resultados desde o 2.º dia. Os 3 erros que travam o protocolo, o jantar certo antes de começar e os sinais de confirmação dia a dia.</p>
+                <div class="pdf-meta"><span class="meta-tag">8 páginas</span><span class="meta-tag">7 primeiros dias</span><span class="meta-tag">Bónus</span></div>
+                <div class="pdf-includes">
+                  <p>O que inclui</p>
+                  <div class="include-item">Os 3 erros que fazem o protocolo demorar</div>
+                  <div class="include-item">O jantar certo na noite anterior</div>
+                  <div class="include-item">A ordem exacta para máxima absorção</div>
+                  <div class="include-item">Sinais de confirmação dia a dia</div>
+                </div>
+                <a href="Acelerador_Resultados.pdf" download class="download-btn">⬇ Descarregar Acelerador</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHAT -->
+        <div class="section" id="sec-chat">
+          <div class="chat-layout">
+            <div class="chat-header">
+              <div class="dr-avatar">L</div>
+              <div class="dr-info">
+                <h4>Dra. Lurdes Ernesto</h4>
+                <span><span class="status-dot"></span> Online — Especialista em Emagrecimento</span>
+              </div>
+            </div>
+            <div class="chat-api-bar">
+              <span class="api-label">OpenAI</span>
+              <span class="api-status">API configurada directamente no código desta página.</span>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+              <div class="msg assistant">
+                <div class="msg-avatar">L</div>
+                <div>
+                  <div class="msg-bubble">Olá! Sou a Dra. Lurdes Ernesto. Estou aqui para te ajudar a seguir o Protocolo Cetogênica Orgânico com sucesso. 🌿<br><br>Podes perguntar-me qualquer coisa sobre as receitas, os horários, os sinais que deves esperar ou qualquer dúvida que surja durante os teus 21 dias. Vamos juntos!</div>
+                  <div class="msg-time">Agora</div>
+                </div>
+              </div>
+            </div>
+            <div class="typing-indicator" id="typing">
+              <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+            <div class="quick-questions">
+              <button class="quick-q" onclick="sendQuick('Como tomo a Receita 1 correctamente?')">Como tomar a Receita 1?</button>
+              <button class="quick-q" onclick="sendQuick('Posso beber cerveja durante o protocolo?')">Posso beber cerveja?</button>
+              <button class="quick-q" onclick="sendQuick('Não senti diferença nos primeiros 2 dias. É normal?')">Sem resultados nos 2 primeiros dias?</button>
+              <button class="quick-q" onclick="sendQuick('Que sinais devo esperar no 3.º dia?')">Sinais do 3.º dia</button>
+              <button class="quick-q" onclick="sendQuick('Posso fazer o protocolo se tiver pressão alta?')">Tenho pressão alta</button>
+              <button class="quick-q" onclick="sendQuick('Onde encontro os ingredientes em Moçambique?')">Onde comprar os ingredientes?</button>
+            </div>
+            <div class="chat-input-area">
+              <textarea class="chat-input" id="chat-input" placeholder="Escreve a tua dúvida sobre o protocolo..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+              <button class="send-btn" onclick="sendMessage()">
+                <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+// ── LOGIN — qualquer nome e senha funcionam ──
+function doLogin() {
+  const user = document.getElementById('login-user').value.trim();
+  const pass = document.getElementById('login-pass').value.trim();
+  const err  = document.getElementById('login-error');
+
+  if (user.length < 1 || pass.length < 1) {
+    err.style.display = 'block';
+    return;
+  }
+
+  err.style.display = 'none';
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+
+  const name = user.charAt(0).toUpperCase() + user.slice(1);
+  document.getElementById('welcome-name').textContent = name;
+  document.getElementById('user-name-display').textContent = name;
+  document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
+}
+
+document.getElementById('login-user').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('login-pass').focus(); });
+document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+function doLogout() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+}
+
+// ── NAVEGAÇÃO ──
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  const titles = { dashboard:'Início', materiais:'Materiais', chat:'Chat com a Doutora' };
+  document.getElementById('page-title').textContent = titles[id] || id;
+  closeSidebar();
+}
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('open'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
+
+// ── API KEY ──
+// Atenção: numa página HTML pura, esta chave fica exposta no navegador.
+const OPENAI_API_KEY = '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';
+const OPENAI_MODEL = 'gpt-4o-mini';
+
+// ── SYSTEM PROMPT ──
+const SYSTEM_PROMPT = `És a Dra. Lurdes Ernesto, médica moçambicana especialista em emagrecimento com 8 anos de experiência e formação em Cuba. Respondes SEMPRE em português de Moçambique.
+
+O teu único foco é ajudar os membros a seguir correctamente o Protocolo Cetogênica Orgânico. Nunca saias deste tema. Se alguém perguntar algo fora do protocolo, redireciona gentilmente para o protocolo.
+
+CONHECIMENTO DO PROTOCOLO:
+- RECEITA 1 (Desinchar sem emagrecer): Gengibre fresco ralado (2cm), sumo de 1 limão, 1 pau de canela, 300ml água a 80°C, 1 colher de chá de mel puro, 1 pitada de sal rosa. Infundir gengibre e canela 10 min. Tomar em jejum 20 min antes do pequeno-almoço.
+- RECEITA 2 (Desinchar + emagrecer): Gengibre fresco (3cm), 1 limão, pitada de pimenta caiena, 1 saqueta chá verde, meio copo sumo de maçã natural, 1 pitada de sal rosa, 250ml água a 80°C. Tomar manhã em jejum e tarde entre 14h-16h.
+- PROTOCOLO 21 DIAS: Semana 1 — Receita 1. Semana 2 — Receita 1 + 2. Semana 3 — Receita 2.
+- RESULTADOS: Barriga mais leve a partir do 3.º dia. Resultados visuais entre o 7.º e 10.º dia.
+- ERROS: Tomar com estômago cheio, misturar com café com leite (esperar 40 min), pouca água (mínimo 2 litros/dia).
+- POTENCIADORES: Caminhada 20 min após toma, eliminar sal comum, dormir antes da meia-noite, reduzir cerveja para 1/dia na semana 1, pesar só no 7.º dia.
+- SINAIS NORMAIS: Mais urinação (dia 1-2), barriga mais suave ao acordar (dia 2-3), menos gases (dia 3-4), mais energia à tarde (dia 4-5), roupa mais folgada (dia 5-7).
+
+CONTEXTO MOÇAMBICANO:
+- Gengibre fresco: mercados locais de Maputo, Beira, Nampula, Tete — muito fácil de encontrar e barato.
+- Sal rosa: Shoprite, Mega. Pode substituir por sal marinho não iodado no início.
+- Pimenta caiena: mercearias indianas e lojas de especiarias nas cidades.
+- Chá verde: Shoprite e supermercados maiores.
+- Limão e canela: qualquer mercado ou barraca local — ingredientes do dia-a-dia moçambicano.
+- Adapta conselhos à rotina moçambicana: calor, trabalho, refeições típicas, xima, etc.
+
+REGRAS:
+1. Sê calorosa, encorajadora e directa como uma médica moçambicana de confiança.
+2. Nunca recomendes medicamentos ou outros métodos de emagrecimento.
+3. Se perguntarem fora do tema, redireciona gentilmente: "Essa é uma boa questão, mas o meu foco é ajudar-te com o protocolo. Posso ajudar-te com isso?"
+4. Encoraja sempre a continuar mesmo quando os resultados demoram.
+5. Linguagem simples e próxima — sem jargão médico.
+6. Celebra os resultados positivos com entusiasmo genuíno!`;
+
+// ── CHAT ──
+let chatHistory = [];
+
+function getTime() { const n = new Date(); return n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0'); }
+
+function appendMessage(role, text) {
+  const c = document.getElementById('chat-messages');
+  const div = document.createElement('div'); div.className = `msg ${role}`;
+  const avatar = document.createElement('div'); avatar.className = 'msg-avatar';
+  avatar.textContent = role === 'user' ? (document.getElementById('user-avatar').textContent||'M') : 'L';
+  const inner = document.createElement('div');
+  const bubble = document.createElement('div'); bubble.className = 'msg-bubble';
+  bubble.innerHTML = text.replace(/\n/g,'<br>');
+  const time = document.createElement('div'); time.className = 'msg-time'; time.textContent = getTime();
+  inner.appendChild(bubble); inner.appendChild(time);
+  div.appendChild(avatar); div.appendChild(inner);
+  c.appendChild(div); c.scrollTop = c.scrollHeight;
+}
+
+function showTyping() { document.getElementById('typing').classList.add('visible'); document.getElementById('chat-messages').scrollTop=99999; }
+function hideTyping() { document.getElementById('typing').classList.remove('visible'); }
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const text  = input.value.trim();
+  if (!text) return;
+  if (!OPENAI_API_KEY || OPENAI_API_KEY === 'COLOCA_A_TUA_API_KEY_AQUI') {
+    alert('Define a tua API Key directamente no código, na constante OPENAI_API_KEY.');
+    return;
+  }
+
+  input.value = ''; input.style.height = 'auto';
+  appendMessage('user', text);
+  chatHistory.push({ role:'user', content:text });
+  showTyping();
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${OPENAI_API_KEY}` },
+      body: JSON.stringify({
+        model: OPENAI_MODEL,
+        messages: [{ role:'system', content:SYSTEM_PROMPT }, ...chatHistory],
+        max_tokens: 600,
+        temperature: 0.75
+      })
+    });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message||'Erro na API'); }
+    const data = await res.json();
+    const reply = data.choices[0].message.content;
+    chatHistory.push({ role:'assistant', content:reply });
+    hideTyping();
+    appendMessage('assistant', reply);
+  } catch(err) {
+    hideTyping();
+    appendMessage('assistant', `Desculpa, ocorreu um erro: ${err.message}. Verifica a tua API Key e tenta novamente.`);
+  }
+}
+
+function sendQuick(text) { document.getElementById('chat-input').value = text; sendMessage(); }
+function handleKey(e) { if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMessage(); } }
+function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,120)+'px'; }
+</script>
+</body>
+</html>
